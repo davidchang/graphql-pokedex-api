@@ -1,0 +1,18 @@
+{
+  "name": "learning-graphql-with-pokedex",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "babel": "^5.8.5",
+    "body-parser": "^1.13.2",
+    "express": "^4.13.1",
+    "graphql": "^0.1.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Chang <dchang.me@gmail.com>",
+  "license": "ISC"
+}
