@@ -9,7 +9,7 @@ import {
 
 import { Pokemon } from './Pokemon';
 import { PokemonType, UserType } from './schemaTypes';
-import { query } from './mongoService';
+import { mongo } from './mongoService';
 
 let Q = require('q');
 
@@ -30,25 +30,78 @@ let schema = new GraphQLSchema({
           }
         },
         resolve: (root, {name}) => {
-          let deferred = Q.defer();
 
-          query(db => {
-            // Get the documents collection
-            var collection = db.collection('pokedex');
-            // Find some documents
-            collection.find({ name })
-              .toArray((err, docs) => {
-                if (err) {
-                  deferred.reject(err);
-                  return;
-                }
+          return mongo()
+            .then(db => {
+              let deferred = Q.defer();
 
-                db.close();
-                deferred.resolve(docs.length ? docs[0] : null);
-              });
-          });
+              let collection = db.collection('users');
+              collection.find({ name })
+                .toArray((err, docs) => {
+                  if (err) {
+                    deferred.reject(err);
+                    return;
+                  }
 
-          return deferred.promise;
+                  db.close();
+                  deferred.resolve(docs.length ? docs[0] : null);
+                });
+
+              return deferred.promise;
+            });
+
+        }
+      }
+    }
+  }),
+
+  mutation: new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+      upsertUser: {
+        type: UserType,
+        args: {
+          name: {
+            description: 'The name of the user',
+            type: new GraphQLNonNull(GraphQLString)
+          }
+        },
+        resolve: (obj, {name}) => {
+
+          let toCreate = {
+            name,
+            caught: [],
+            created: new Date().valueOf()
+          };
+
+          return mongo()
+            .then(db => {
+              let deferred = Q.defer();
+
+              let collection = db.collection('users');
+
+              collection.find({ name })
+                .toArray((err, docs) => {
+                  if (docs.length) {
+                    db.close();
+                    return deferred.resolve(docs[0]);
+                  }
+
+                  collection.insert(toCreate, (err, result) => {
+                    db.close();
+
+                    if (err) {
+                      deferred.reject(err);
+                      return;
+                    }
+
+                    deferred.resolve(toCreate);
+                  });
+                });
+
+              return deferred.promise;
+            });
+
         }
       }
     }
