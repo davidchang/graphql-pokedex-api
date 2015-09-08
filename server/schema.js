@@ -5,7 +5,7 @@ import {
   GraphQLNonNull,
   GraphQLList,
   GraphQLString,
-} from 'graphql/lib/type';
+} from 'graphql';
 
 import { Pokemon } from './Pokemon';
 import { PokemonType, UserType } from './schemaTypes';

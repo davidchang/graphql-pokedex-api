@@ -3,7 +3,7 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLString,
-} from 'graphql/lib/type';
+} from 'graphql';
 
 export const PokemonType = new GraphQLObjectType({
   name: 'Pokemon',
